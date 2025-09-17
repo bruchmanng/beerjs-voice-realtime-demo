@@ -13,6 +13,7 @@ import { SessionStatus } from '../types';
 export interface RealtimeSessionCallbacks {
   onConnectionChange?: (status: SessionStatus) => void;
   onAgentHandoff?: (agentName: string) => void;
+  onToolCall?: (toolName: string, args: any, result: any) => void;
 }
 
 export interface ConnectOptions {
@@ -85,6 +86,12 @@ export function useRealtimeSession(callbacks: RealtimeSessionCallbacks = {}) {
     callbacks.onAgentHandoff?.(agentName);
   };
 
+  const handleToolCall = (details: any, _agent: any, functionCall: any, result: any) => {
+    if (callbacks.onToolCall) {
+      callbacks.onToolCall(functionCall.name, functionCall.arguments, result);
+    }
+  };
+
   useEffect(() => {
     if (sessionRef.current) {
       // Log server errors
@@ -98,7 +105,10 @@ export function useRealtimeSession(callbacks: RealtimeSessionCallbacks = {}) {
       // history events
       sessionRef.current.on("agent_handoff", handleAgentHandoff);
       sessionRef.current.on("agent_tool_start", historyHandlers.handleAgentToolStart);
-      sessionRef.current.on("agent_tool_end", historyHandlers.handleAgentToolEnd);
+      sessionRef.current.on("agent_tool_end", (details: any, agent: any, functionCall: any, result: any) => {
+        historyHandlers.handleAgentToolEnd(details, agent, functionCall, result);
+        handleToolCall(details, agent, functionCall, result);
+      });
       sessionRef.current.on("history_updated", historyHandlers.handleHistoryUpdated);
       sessionRef.current.on("history_added", historyHandlers.handleHistoryAdded);
       sessionRef.current.on("guardrail_tripped", historyHandlers.handleGuardrailTripped);

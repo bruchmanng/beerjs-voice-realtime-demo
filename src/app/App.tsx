@@ -9,6 +9,7 @@ import Image from "next/image";
 import Transcript from "./components/Transcript";
 import Events from "./components/Events";
 import BottomToolbar from "./components/BottomToolbar";
+import FiladdLanding from "./components/FiladdLanding";
 
 // Types
 import { SessionStatus } from "@/app/types";
@@ -27,12 +28,14 @@ import { chatSupervisorScenario } from "@/app/agentConfigs/chatSupervisor";
 import { customerServiceRetailCompanyName } from "@/app/agentConfigs/customerServiceRetail";
 import { chatSupervisorCompanyName } from "@/app/agentConfigs/chatSupervisor";
 import { simpleHandoffScenario } from "@/app/agentConfigs/simpleHandoff";
+import { filaddSalesScenario } from "@/app/agentConfigs/filaddSales";
 
 // Map used by connect logic for scenarios defined via the SDK.
 const sdkScenarioMap: Record<string, RealtimeAgent[]> = {
   simpleHandoff: simpleHandoffScenario,
   customerServiceRetail: customerServiceRetailScenario,
   chatSupervisor: chatSupervisorScenario,
+  filaddSales: filaddSalesScenario,
 };
 
 import useAudioDownload from "./hooks/useAudioDownload";
@@ -100,6 +103,27 @@ function App() {
       handoffTriggeredRef.current = true;
       setSelectedAgentName(agentName);
     },
+    onToolCall: (toolName: string, args: any, _result: any) => { // eslint-disable-line @typescript-eslint/no-unused-vars
+      // Handle Filadd-specific tools
+      if (agentSetKey === 'filaddSales') {
+        switch (toolName) {
+          case 'highlight_section':
+            setHighlightedSection(args.section);
+            setTimeout(() => setHighlightedSection(null), args.duration * 1000 || 3000);
+            break;
+          case 'show_membership_details':
+            setMembershipDetails({
+              membership: args.membership,
+              feature: args.feature || 'all'
+            });
+            setTimeout(() => setMembershipDetails(null), 10000); // Hide after 10 seconds
+            break;
+          case 'initiate_purchase':
+            handlePurchaseInitiated(args.membership, args.discount_code);
+            break;
+        }
+      }
+    },
   });
 
   const [sessionStatus, setSessionStatus] =
@@ -117,6 +141,13 @@ function App() {
       return stored ? stored === 'true' : true;
     },
   );
+
+  // State for Filadd demo
+  const [highlightedSection, setHighlightedSection] = useState<string | null>(null);
+  const [membershipDetails, setMembershipDetails] = useState<{
+    membership: 'pro' | 'premium' | null;
+    feature: string | null;
+  } | null>(null);
 
   // Initialize the recording hook.
   const { startRecording, stopRecording, downloadRecording } =
@@ -350,6 +381,13 @@ function App() {
     window.location.replace(url.toString());
   };
 
+  // Handler for Filadd purchase
+  const handlePurchaseInitiated = (membership: 'pro' | 'premium', discountCode?: string) => {
+    console.log(`Purchase initiated for ${membership}`, discountCode ? `with code: ${discountCode}` : '');
+    // This could be connected to a real purchase flow
+    alert(`¡Excelente! Iniciando proceso de compra para membresía ${membership.toUpperCase()}${discountCode ? ` con código ${discountCode}` : ''}`);
+  };
+
   useEffect(() => {
     const storedPushToTalkUI = localStorage.getItem("pushToTalkUI");
     if (storedPushToTalkUI) {
@@ -516,17 +554,42 @@ function App() {
       </div>
 
       <div className="flex flex-1 gap-2 px-2 overflow-hidden relative">
-        <Transcript
-          userText={userText}
-          setUserText={setUserText}
-          onSendMessage={handleSendTextMessage}
-          downloadRecording={downloadRecording}
-          canSend={
-            sessionStatus === "CONNECTED"
-          }
-        />
-
-        <Events isExpanded={isEventsPaneExpanded} />
+        {agentSetKey === 'filaddSales' ? (
+          <>
+            <div className="flex flex-1 gap-2">
+              <div className="flex-1 overflow-y-auto">
+                <FiladdLanding
+                  highlightedSection={highlightedSection}
+                  membershipDetails={membershipDetails}
+                  onPurchaseInitiated={handlePurchaseInitiated}
+                />
+              </div>
+              <div className="w-96 flex flex-col gap-2">
+                <Transcript
+                  userText={userText}
+                  setUserText={setUserText}
+                  onSendMessage={handleSendTextMessage}
+                  downloadRecording={downloadRecording}
+                  canSend={sessionStatus === "CONNECTED"}
+                />
+                {isEventsPaneExpanded && <Events isExpanded={true} />}
+              </div>
+            </div>
+          </>
+        ) : (
+          <>
+            <Transcript
+              userText={userText}
+              setUserText={setUserText}
+              onSendMessage={handleSendTextMessage}
+              downloadRecording={downloadRecording}
+              canSend={
+                sessionStatus === "CONNECTED"
+              }
+            />
+            <Events isExpanded={isEventsPaneExpanded} />
+          </>
+        )}
       </div>
 
       <BottomToolbar
