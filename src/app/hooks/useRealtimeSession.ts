@@ -87,8 +87,42 @@ export function useRealtimeSession(callbacks: RealtimeSessionCallbacks = {}) {
   };
 
   const handleToolCall = (details: any, _agent: any, functionCall: any, result: any) => {
-    if (callbacks.onToolCall) {
-      callbacks.onToolCall(functionCall.name, functionCall.arguments, result);
+    console.log('🔧 handleToolCall triggered with raw data:', {
+      details,
+      functionCall,
+      result,
+      hasCallback: !!callbacks.onToolCall,
+      functionCallType: typeof functionCall,
+      functionCallKeys: functionCall ? Object.keys(functionCall) : null
+    });
+    
+    console.log('🔍 functionCall detailed:', {
+      name: functionCall?.name,
+      arguments: functionCall?.arguments,
+      argumentsType: typeof functionCall?.arguments,
+      argumentsStringified: JSON.stringify(functionCall?.arguments)
+    });
+    
+    if (callbacks.onToolCall && functionCall) {
+      console.log('📞 Calling onToolCall callback');
+      
+      // Try to parse arguments from result if arguments is empty
+      let args = functionCall.arguments || {};
+      if (Object.keys(args).length === 0 && typeof result === 'string') {
+        try {
+          args = JSON.parse(result);
+          console.log('📦 Parsed args from result:', args);
+        } catch (e) {
+          console.log('❌ Failed to parse result as JSON:', e);
+        }
+      }
+      
+      callbacks.onToolCall(functionCall.name, args, result);
+    } else {
+      console.log('❌ NOT calling callback because:', {
+        hasCallback: !!callbacks.onToolCall,
+        hasFunctionCall: !!functionCall
+      });
     }
   };
 
@@ -106,6 +140,7 @@ export function useRealtimeSession(callbacks: RealtimeSessionCallbacks = {}) {
       sessionRef.current.on("agent_handoff", handleAgentHandoff);
       sessionRef.current.on("agent_tool_start", historyHandlers.handleAgentToolStart);
       sessionRef.current.on("agent_tool_end", (details: any, agent: any, functionCall: any, result: any) => {
+        console.log('🛠️ agent_tool_end event received:', functionCall?.name);
         historyHandlers.handleAgentToolEnd(details, agent, functionCall, result);
         handleToolCall(details, agent, functionCall, result);
       });

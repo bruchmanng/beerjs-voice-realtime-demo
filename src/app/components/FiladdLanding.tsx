@@ -19,17 +19,49 @@ export default function FiladdLanding({
   const [highlightClass, setHighlightClass] = useState('');
 
   useEffect(() => {
+    console.log('🔍 FiladdLanding received highlightedSection:', highlightedSection);
     if (highlightedSection) {
-      setHighlightClass('animate-pulse bg-yellow-200 rounded-lg p-2 transition-all duration-500');
+      // Scroll hacia la sección
+      let sectionElement = document.getElementById(`section-${highlightedSection}`);
+      
+      // Para "comparison", usar la sección de memberships
+      if (!sectionElement && highlightedSection === 'comparison') {
+        sectionElement = document.getElementById('section-memberships');
+      }
+      
+      console.log('📍 Found section element:', sectionElement);
+      if (sectionElement) {
+        sectionElement.scrollIntoView({ 
+          behavior: 'smooth', 
+          block: 'center' 
+        });
+      }
+      
+      // Animación de highlight
+      const newClass = 'bg-yellow-200 transition-all duration-700 ease-in-out rounded-lg shadow-lg';
+      console.log('🎨 Setting highlight class:', newClass);
+      setHighlightClass(newClass);
+      
       const timer = setTimeout(() => {
-        setHighlightClass('');
-      }, 3000);
+        console.log('⏰ Starting fade out');
+        setHighlightClass('transition-all duration-1000 ease-out');
+        // Limpiar completamente después de la transición
+        setTimeout(() => {
+          console.log('🧹 Clearing highlight class');
+          setHighlightClass('');
+        }, 1000);
+      }, 2000);
+      
       return () => clearTimeout(timer);
     }
   }, [highlightedSection]);
 
   const getSectionClass = (section: string) => {
-    return highlightedSection === section ? highlightClass : '';
+    const result = highlightedSection === section ? highlightClass : '';
+    if (result) {
+      console.log(`🏷️ getSectionClass(${section}): "${result}"`);
+    }
+    return result;
   };
 
   const proFeatures = [
@@ -70,7 +102,7 @@ export default function FiladdLanding({
   return (
     <div className="min-h-screen bg-gradient-to-b from-blue-50 to-white">
       {/* Hero Section */}
-      <div className={`py-20 px-4 text-center ${getSectionClass('hero')}`}>
+      <div id="section-hero" className={`py-20 px-4 text-center ${getSectionClass('hero')}`}>
         <h1 className="text-5xl font-bold text-gray-900 mb-6">
           🎯 <span className="text-blue-600">Filadd</span> - Tu Éxito en la PSU
         </h1>
@@ -91,7 +123,7 @@ export default function FiladdLanding({
       </div>
 
       {/* Benefits Section */}
-      <div className={`py-16 px-4 bg-white ${getSectionClass('benefits')}`}>
+      <div id="section-benefits" className={`py-16 px-4 bg-white ${getSectionClass('benefits')}`}>
         <div className="max-w-6xl mx-auto">
           <h2 className="text-3xl font-bold text-center text-gray-900 mb-12">
             ¿Por qué elegir Filadd?
@@ -117,7 +149,7 @@ export default function FiladdLanding({
       </div>
 
       {/* Memberships Comparison */}
-      <div className={`py-16 px-4 bg-gray-50 ${getSectionClass('memberships')} ${getSectionClass('comparison')}`}>
+      <div id="section-memberships" className={`py-16 px-4 bg-gray-50 ${getSectionClass('memberships')} ${getSectionClass('comparison')}`}>
         <div className="max-w-6xl mx-auto">
           <h2 className="text-3xl font-bold text-center text-gray-900 mb-4">
             Elige tu membresía
@@ -128,7 +160,7 @@ export default function FiladdLanding({
           
           <div className="grid md:grid-cols-2 gap-8">
             {/* PRO Plan */}
-            <div className={`bg-white rounded-2xl shadow-lg p-8 relative ${getSectionClass('pro-plan')}`}>
+            <div id="section-pro-plan" className={`bg-white rounded-2xl shadow-lg p-8 relative ${getSectionClass('pro-plan')}`}>
               {membershipDetails?.membership === 'pro' && (
                 <div className="absolute inset-0 bg-blue-100 bg-opacity-50 rounded-2xl animate-pulse" />
               )}
@@ -158,7 +190,7 @@ export default function FiladdLanding({
             </div>
 
             {/* PREMIUM Plan */}
-            <div className={`bg-white rounded-2xl shadow-xl p-8 relative border-2 border-purple-200 ${getSectionClass('premium-plan')}`}>
+            <div id="section-premium-plan" className={`bg-white rounded-2xl shadow-xl p-8 relative border-2 border-purple-200 ${getSectionClass('premium-plan')}`}>
               {membershipDetails?.membership === 'premium' && (
                 <div className="absolute inset-0 bg-purple-100 bg-opacity-50 rounded-2xl animate-pulse" />
               )}
@@ -199,7 +231,7 @@ export default function FiladdLanding({
       </div>
 
       {/* Testimonials */}
-      <div className={`py-16 px-4 bg-white ${getSectionClass('testimonials')}`}>
+      <div id="section-testimonials" className={`py-16 px-4 bg-white ${getSectionClass('testimonials')}`}>
         <div className="max-w-6xl mx-auto">
           <h2 className="text-3xl font-bold text-center text-gray-900 mb-12">
             Historias de éxito
@@ -224,7 +256,7 @@ export default function FiladdLanding({
       </div>
 
       {/* Contact Section */}
-      <div className={`py-16 px-4 bg-blue-600 text-white ${getSectionClass('contact')}`}>
+      <div id="section-contact" className={`py-16 px-4 bg-blue-600 text-white ${getSectionClass('contact')}`}>
         <div className="max-w-4xl mx-auto text-center">
           <h2 className="text-3xl font-bold mb-6">
             ¿Tienes preguntas?
