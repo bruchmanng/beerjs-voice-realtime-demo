@@ -13,6 +13,8 @@ interface BottomToolbarProps {
   setIsEventsPaneExpanded: (val: boolean) => void;
   isAudioPlaybackEnabled: boolean;
   setIsAudioPlaybackEnabled: (val: boolean) => void;
+  isMuted: boolean;
+  setIsMuted: (val: boolean) => void;
   codec: string;
   onCodecChange: (newCodec: string) => void;
 }
@@ -29,6 +31,8 @@ function BottomToolbar({
   setIsEventsPaneExpanded,
   isAudioPlaybackEnabled,
   setIsAudioPlaybackEnabled,
+  isMuted,
+  setIsMuted,
   codec,
   onCodecChange,
 }: BottomToolbarProps) {
@@ -97,6 +101,23 @@ function BottomToolbar({
         >
           Talk
         </button>
+      </div>
+
+      <div className="flex flex-row items-center gap-2">
+        <input
+          id="mute-microphone"
+          type="checkbox"
+          checked={isMuted}
+          onChange={(e) => setIsMuted(e.target.checked)}
+          disabled={!isConnected}
+          className="w-4 h-4"
+        />
+        <label
+          htmlFor="mute-microphone"
+          className="flex items-center cursor-pointer"
+        >
+          Mutear
+        </label>
       </div>
 
       <div className="flex flex-row items-center gap-1">

@@ -142,10 +142,11 @@ function App() {
     useState<SessionStatus>("DISCONNECTED");
 
   const [isEventsPaneExpanded, setIsEventsPaneExpanded] =
-    useState<boolean>(true);
+    useState<boolean>(false);
   const [userText, setUserText] = useState<string>("");
   const [isPTTActive, setIsPTTActive] = useState<boolean>(false);
   const [isPTTUserSpeaking, setIsPTTUserSpeaking] = useState<boolean>(false);
+  const [isMuted, setIsMuted] = useState<boolean>(false);
   const [isAudioPlaybackEnabled, setIsAudioPlaybackEnabled] = useState<boolean>(
     () => {
       if (typeof window === 'undefined') return true;
@@ -478,6 +479,18 @@ function App() {
     }
   }, [sessionStatus, isAudioPlaybackEnabled]);
 
+  // Handle microphone mute state
+  useEffect(() => {
+    if (sessionStatus === 'CONNECTED') {
+      try {
+        // Note: The SDK mute function controls microphone input
+        mute(isMuted);
+      } catch (err) {
+        console.warn('Failed to toggle microphone mute', err);
+      }
+    }
+  }, [isMuted, sessionStatus]);
+
   useEffect(() => {
     if (sessionStatus === "CONNECTED" && audioElementRef.current?.srcObject) {
       // The remote audio stream from the audio element.
@@ -627,6 +640,8 @@ function App() {
         setIsEventsPaneExpanded={setIsEventsPaneExpanded}
         isAudioPlaybackEnabled={isAudioPlaybackEnabled}
         setIsAudioPlaybackEnabled={setIsAudioPlaybackEnabled}
+        isMuted={isMuted}
+        setIsMuted={setIsMuted}
         codec={urlCodec}
         onCodecChange={handleCodecChange}
       />
