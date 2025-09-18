@@ -107,7 +107,8 @@ const validateDiscountCodeTool = tool({
           ? `¡Excelente! El código ${data.discountCode} es válido y te da un ${data.discountPercentage}% de descuento.`
           : `Lo siento, el código ${args.discountCode} no es válido o ha expirado.`
       };
-    } catch (error) {
+    } catch (err) {
+      console.error('Error validating discount code:', err);
       return {
         isValid: false,
         discountCode: args.discountCode,
