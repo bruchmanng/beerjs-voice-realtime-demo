@@ -180,7 +180,7 @@ export function createFiladdCompetitorGuardrail() {
           outputInfo: {
             ...res,
             redirectMessage: triggered ? 
-              "Entiendo tu pregunta, pero déjame enfocarme en por qué Filadd es la mejor opción para alcanzar tus metas académicas. Nuestro programa está diseñado específicamente para maximizar tu puntaje en la PSU/PDT." :
+              "Entiendo tu pregunta, pero déjame enfocarme en por qué Filadd es la mejor opción para alcanzar tus metas académicas. Nuestro programa está diseñado específicamente para maximizar tu puntaje en la PAES." :
               undefined
           },
         };

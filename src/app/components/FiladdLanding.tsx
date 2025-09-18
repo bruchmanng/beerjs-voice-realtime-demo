@@ -90,7 +90,7 @@ export default function FiladdLanding({
     {
       name: "Carlos Rodríguez",
       score: "720 puntos",
-      text: "El material de estudio es excelente y los simulacros me prepararon perfectamente para la PSU real."
+      text: "El material de estudio es excelente y los simulacros me prepararon perfectamente para la PAES real."
     },
     {
       name: "Valentina Silva",
@@ -104,7 +104,7 @@ export default function FiladdLanding({
       {/* Hero Section */}
       <div id="section-hero" className={`py-20 px-4 text-center ${getSectionClass('hero')}`}>
         <h1 className="text-5xl font-bold text-gray-900 mb-6">
-          🎯 <span className="text-blue-600">Filadd</span> - Tu Éxito en la PSU
+          🎯 <span className="text-blue-600">Filadd</span> - Tu Éxito en la PAES
         </h1>
         <p className="text-xl text-gray-600 mb-8 max-w-3xl mx-auto">
           El preuniversitario online #1 de Chile. Metodología comprobada, profesores expertos y 
@@ -132,7 +132,7 @@ export default function FiladdLanding({
             <div className="text-center p-6 rounded-lg bg-blue-50">
               <div className="text-4xl mb-4">📚</div>
               <h3 className="text-xl font-semibold mb-3">Material Actualizado</h3>
-              <p className="text-gray-600">Contenido alineado 100% con la nueva PDT y los cambios del DEMRE</p>
+              <p className="text-gray-600">Contenido alineado 100% con la nueva PAES y los cambios del DEMRE</p>
             </div>
             <div className="text-center p-6 rounded-lg bg-green-50">
               <div className="text-4xl mb-4">👨‍🏫</div>

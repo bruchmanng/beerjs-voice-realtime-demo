@@ -2,7 +2,7 @@
 
 ## 📖 Descripción General
 
-Demo de agente de ventas por voz para **Filadd** (preuniversitario chileno PSU/PDT). Usa OpenAI Realtime API para conversaciones naturales que ayudan a estudiantes a elegir membresías.
+Demo de agente de ventas por voz para **Filadd** (preuniversitario chileno PAES). Usa OpenAI Realtime API para conversaciones naturales que ayudan a estudiantes a elegir membresías.
 
 ## 🚀 Características Principales
 
