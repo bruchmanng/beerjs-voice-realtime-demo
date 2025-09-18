@@ -193,11 +193,12 @@ function App() {
     setSelectedAgentConfigSet(agents);
   }, [searchParams]);
 
-  useEffect(() => {
-    if (selectedAgentName && sessionStatus === "DISCONNECTED") {
-      connectToRealtime();
-    }
-  }, [selectedAgentName]);
+  // Auto-connect disabled - users must manually connect
+  // useEffect(() => {
+  //   if (selectedAgentName && sessionStatus === "DISCONNECTED") {
+  //     connectToRealtime();
+  //   }
+  // }, [selectedAgentName]);
 
   useEffect(() => {
     if (

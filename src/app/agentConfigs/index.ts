@@ -13,4 +13,4 @@ export const allAgentSets: Record<string, RealtimeAgent[]> = {
   filaddSales: filaddSalesScenario,
 };
 
-export const defaultAgentSetKey = 'chatSupervisor';
+export const defaultAgentSetKey = 'filaddSales';
