@@ -184,6 +184,10 @@ export function useRealtimeSession(callbacks: RealtimeSessionCallbacks = {}) {
         }),
         model: 'gpt-realtime',
         config: {
+          turnDetection: {
+            type: 'semantic_vad',
+            eagerness: 'low',
+          },
           inputAudioFormat: audioFormat,
           outputAudioFormat: audioFormat,
           inputAudioTranscription: {
