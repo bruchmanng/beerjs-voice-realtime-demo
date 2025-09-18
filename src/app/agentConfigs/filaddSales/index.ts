@@ -62,6 +62,62 @@ const showMembershipDetailsTool = tool({
   }
 });
 
+// Tool para validar códigos de descuento
+const validateDiscountCodeTool = tool({
+  name: 'validate_discount_code',
+  description: 'Valida un código de descuento de forma asíncrona consultando el sistema de Filadd',
+  parameters: {
+    type: 'object',
+    additionalProperties: false,
+    properties: {
+      discountCode: {
+        type: 'string',
+        description: 'El código de descuento a validar (ej: F-PRIMAVERA30)'
+      }
+    },
+    required: ['discountCode']
+  },
+  execute: async (args: any) => {
+    try {
+      const response = await fetch('/api/validate-discount', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          discountCode: args.discountCode
+        })
+      });
+
+      if (!response.ok) {
+        return {
+          isValid: false,
+          discountCode: args.discountCode,
+          error: 'Error al validar el código de descuento',
+          message: 'Hubo un problema al validar tu código. Por favor intenta nuevamente.'
+        };
+      }
+
+      const data = await response.json();
+      return {
+        isValid: data.isValid,
+        discountPercentage: data.discountPercentage,
+        discountCode: data.discountCode,
+        message: data.isValid 
+          ? `¡Excelente! El código ${data.discountCode} es válido y te da un ${data.discountPercentage}% de descuento.`
+          : `Lo siento, el código ${args.discountCode} no es válido o ha expirado.`
+      };
+    } catch (error) {
+      return {
+        isValid: false,
+        discountCode: args.discountCode,
+        error: 'Error de conexión',
+        message: 'No pude validar el código en este momento. ¿Quieres continuar sin el descuento o intentar más tarde?'
+      };
+    }
+  }
+});
+
 // Tool para simular proceso de inscripción
 const initiatePurchaseTool = tool({
   name: 'initiate_purchase',
@@ -110,7 +166,7 @@ Eres un consultor educativo especializado en ayudar a estudiantes chilenos a pre
 5. Al arrancar la compra, pregúntale si tiene un código de descuento. 
     5.1. Si lo tiene, pidele que te lo dicte. Los códigos suelen ser por ejemplo: "F-PRIMAVERA30"
     5.2. Al terminar de dictartelo, repíteselo y que te lo confirme. 
-    5.3. Luego valídalo utilizando la tool correcta, para saber si está válido y que porcentaje de descuento tiene. 
+    5.3. Luego valídalo utilizando la tool \`validate_discount_code\`, para saber si está válido y que porcentaje de descuento tiene. Esta tool a veces tarda hasta 25 segundos en validar, hazle saber al usuario.
 6. Durante la compra pidele medio de pago, que elija entre: Tarjeta de Crédito, Tarjeta de débito, Transferencia, ServiPag, o pago en cuotas con Financiamiento Filadd. 
 
 ### Otros
@@ -146,7 +202,8 @@ Filadd es el preuniversitario online líder en Chile, especializado en preparaci
 
 ## Tools Disponibles
 - \`highlight_section\`: Resalta secciones de la landing mientras hablas
-- \`show_membership_details\`: Muestra detalles específicos de membresías  
+- \`show_membership_details\`: Muestra detalles específicos de membresías
+- \`validate_discount_code\`: Valida códigos de descuento de forma asíncrona
 - \`initiate_purchase\`: Inicia proceso de compra
 
 ## Estilo de Comunicación
@@ -164,7 +221,7 @@ Filadd es el preuniversitario online líder en Chile, especializado en preparaci
 
 ¡Ayuda a estos futuros universitarios a alcanzar sus sueños académicos!
   `,
-  tools: [highlightSectionTool, showMembershipDetailsTool, initiatePurchaseTool],
+  tools: [highlightSectionTool, showMembershipDetailsTool, validateDiscountCodeTool, initiatePurchaseTool],
   handoffs: [], // No handoffs needed for this single-agent sales demo
 });
 
